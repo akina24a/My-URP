@@ -1,11 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEditor;
+using UnityEngine.Profiling;
+
 
 partial class CameraRenderer
 {
     partial void DrawUnsupportedShaders();
     partial void DrawGizmos();
+    partial void PrepareForSceneWindow();
+    partial void PrepareBuffer ();
+    
+    string SampleName { get; set; }
+    
 #if UNITY_EDITOR
     static ShaderTagId[] legacyShaderTagIds = {
         new ShaderTagId("Always"),
@@ -45,5 +52,21 @@ partial class CameraRenderer
         var filteringSettings = FilteringSettings.defaultValue;
         context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
     }
+
+    partial void PrepareForSceneWindow () {
+		if (camera.cameraType == CameraType.SceneView) {
+			ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
+		}
+	}
+    
+    partial void PrepareBuffer () {
+        Profiler.BeginSample("Editor Only");
+        buffer.name = SampleName = camera.name;
+        Profiler.EndSample();
+    }
+#else
+
+	const string SampleName => bufferName;
+
 #endif
 }
