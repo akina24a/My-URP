@@ -11,7 +11,7 @@
 			#pragma vertex UnlitPassVertex
 			#pragma fragment UnlitPassFragment
 			#include "UnlitPass.hlsl"
-
+			#pragma multi_compile_instancing
 
 			ENDHLSL
 		}
