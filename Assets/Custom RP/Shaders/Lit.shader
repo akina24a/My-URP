@@ -20,6 +20,7 @@
 			Blend [_SrcBlend] [_DstBlend]
 			ZWrite [_ZWrite]
 			HLSLPROGRAM
+			#pragma target 3.5
 			#pragma vertex LitPassVertex
 			#pragma fragment LitPassFragment
 			#include  "LitPass.hlsl"
