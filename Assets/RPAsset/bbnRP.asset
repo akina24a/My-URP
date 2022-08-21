@@ -12,3 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf3bfe2e227b8c4faaec4a332a43720, type: 3}
   m_Name: bbnRP
   m_EditorClassIdentifier: 
+  useDynamicBatching: 1
+  useGPUInstancing: 1
+  useSRPBatcher: 0
+  shadows:
+    maxDistance: 500
+    directional:
+      atlasSize: 1024
+      cascadeCount: 1
+      cascadeRatio1: 0.13
+      cascadeRatio2: 0.15
+      cascadeRatio3: 0.6

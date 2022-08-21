@@ -24,7 +24,7 @@ struct Varyings {
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-Varyings ShadowCasterPassVertex (Attributes input) {
+Varyings  ShadowCasterPassVertex (Attributes input) {
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
