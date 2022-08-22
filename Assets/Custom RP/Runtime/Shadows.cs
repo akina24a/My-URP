@@ -14,9 +14,11 @@ public class Shadows
         dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
         cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres"),
-        shadowDistanceId = Shader.PropertyToID("_ShadowDistance");
+        cascadeDataId = Shader.PropertyToID("_CascadeData"),
+        shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
 
-    static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades];
+    static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades],
+        cascadeData = new Vector4[maxCascades];
     static Matrix4x4[]
         dirShadowMatrices = new Matrix4x4[maxShadowedDirectionalLightCount* maxCascades];
 
@@ -108,8 +110,14 @@ public class Shadows
         buffer.SetGlobalVectorArray(
             cascadeCullingSpheresId, cascadeCullingSpheres
         );
+        buffer.SetGlobalVectorArray(cascadeDataId, cascadeData);
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
-        buffer.SetGlobalFloat(shadowDistanceId, settings.maxDistance);
+        float f = 1f - settings.directional.cascadeFade;
+        buffer.SetGlobalVector(
+            shadowDistanceFadeId,
+            new Vector4(1f / settings.maxDistance, 1f / settings.distanceFade,
+                1f / (1f - f * f))
+        );
         buffer.EndSample(bufferName);
         ExecuteBuffer();
     }
@@ -139,9 +147,7 @@ public class Shadows
             );
             shadowSettings.splitData = splitData;
             if (index == 0) {
-                Vector4 cullingSphere = splitData.cullingSphere;
-                cullingSphere.w *= cullingSphere.w;
-                cascadeCullingSpheres[i] = cullingSphere;
+                SetCascadeData(i, splitData.cullingSphere, tileSize);
             }
             int tileIndex = tileOffset + i;
             // 设置世界到灯光空间的变换矩阵
@@ -150,11 +156,22 @@ public class Shadows
                 SetTileViewport(tileIndex, split, tileSize), split
             );
             buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+            //buffer.SetGlobalDepthBias(0f, 3f);
             ExecuteBuffer();
             context.DrawShadows(ref shadowSettings);
+            //buffer.SetGlobalDepthBias(0f, 0f);
         }
     }
-
+    void SetCascadeData (int index, Vector4 cullingSphere, float tileSize) {
+        //直径/tile size
+        float texelSize = 2f * cullingSphere.w / tileSize;
+        cullingSphere.w *= cullingSphere.w;
+        cascadeCullingSpheres[index] = cullingSphere;
+        cascadeData[index] = new Vector4(
+            1f / cullingSphere.w,
+            texelSize* 1.4142136f
+        );
+    }
     Matrix4x4 ConvertToAtlasMatrix(Matrix4x4 m, Vector2 offset, int split)
     {
         if (SystemInfo.usesReversedZBuffer)
