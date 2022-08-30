@@ -14,7 +14,10 @@
 	}
 	
 	SubShader {
-		
+		HLSLINCLUDE
+		#include "../ShaderLibrary/Common.hlsl"
+		#include "UnlitInput.hlsl"
+		ENDHLSL
 		Pass {
 			Blend [_SrcBlend] [_DstBlend]
 			ZWrite [_ZWrite]
