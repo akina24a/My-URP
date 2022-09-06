@@ -17,6 +17,7 @@
 		[HDR] _EmissionColor("Emission", Color) = (0.0, 0.0, 0.0, 0.0)
 		[HideInInspector] _MainTex("Texture for Lightmap", 2D) = "white" {}
 		[HideInInspector] _Color("Color for Lightmap", Color) = (0.5, 0.5, 0.5, 1.0)
+		_Fresnel ("Fresnel", Range(0, 1)) = 1
 	}
 	
 	SubShader {
@@ -34,7 +35,7 @@
 			#include  "LitPass.hlsl"
 			#pragma target 3.5
 			
-	
+			#pragma multi_compile _ LOD_FADE_CROSSFADE
 			#pragma shader_feature _CLIPPING
 			#pragma shader_feature _RECEIVE_SHADOWS
 			#pragma shader_feature _PREMULTIPLY_ALPHA
@@ -56,6 +57,7 @@
 
 			HLSLPROGRAM
 			#pragma target 3.5
+			#pragma multi_compile _ LOD_FADE_CROSSFADE
 			#pragma shader_feature _ _SHADOWS_CLIP _SHADOWS_DITHER
 			#pragma multi_compile_instancing
 			#pragma vertex ShadowCasterPassVertex

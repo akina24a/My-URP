@@ -54,7 +54,7 @@ public partial class CameraRenderer
         ){
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing,
-            perObjectData = PerObjectData.Lightmaps | PerObjectData.ShadowMask | PerObjectData.LightProbe|
+            perObjectData = PerObjectData.ReflectionProbes |PerObjectData.Lightmaps | PerObjectData.ShadowMask | PerObjectData.LightProbe|
                             PerObjectData.OcclusionProbe |PerObjectData.LightProbeProxyVolume|
                             PerObjectData.OcclusionProbeProxyVolume
         };

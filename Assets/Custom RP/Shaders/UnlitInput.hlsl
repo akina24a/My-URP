@@ -14,7 +14,9 @@ float2 TransformBaseUV (float2 baseUV) {
     float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST);
     return baseUV * baseST.xy + baseST.zw;
 }
-
+float GetFresnel (float2 baseUV) {
+    return 0.0;
+}
 float4 GetBase (float2 baseUV) {
     float4 map = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, baseUV);
     float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);

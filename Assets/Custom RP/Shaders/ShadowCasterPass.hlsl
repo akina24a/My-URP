@@ -27,6 +27,7 @@ struct Varyings {
 Varyings  ShadowCasterPassVertex (Attributes input) {
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
+    ClipLOD(input.positionCS.xy, unity_LODFade.x);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     float3 positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(positionWS);
