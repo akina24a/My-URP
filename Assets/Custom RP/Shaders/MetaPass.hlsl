@@ -20,6 +20,8 @@ bool4 unity_MetaFragmentControl;
 float unity_OneOverOutputBoost;
 float unity_MaxOutputValue;
 
+
+
 Varyings MetaPassVertex(Attributes input) {
 	Varyings output;
 	input.positionOS.xy = input.lightMapUV * unity_LightmapST.xy + unity_LightmapST.zw;
@@ -27,16 +29,17 @@ Varyings MetaPassVertex(Attributes input) {
 	output.positionCS = TransformWorldToHClip(input.positionOS);
 	output.baseUV = TransformBaseUV(input.baseUV);
 	return output;
-}
+} 
 
 float4 MetaPassFragment(Varyings input) : SV_TARGET{
-	float4 base = GetBase(input.baseUV);
-	Surface surface;
+	InputConfig config = GetInputConfig(input.baseUV);
+	float4 base = GetBase(config);
+	Surface surface;	
 	ZERO_INITIALIZE(Surface, surface);
 	surface.color = base.rgb;
-	surface.metallic = GetMetallic(input.baseUV);
-	surface.smoothness = GetSmoothness(input.baseUV);
-	surface.fresnelStrength = GetFresnel(input.baseUV);
+	surface.metallic = GetMetallic(config);
+	surface.smoothness = GetSmoothness(config);
+	surface.fresnelStrength = GetFresnel(config);
 	BRDF brdf = GetBRDF(surface);
 	float4 meta = 0.0;
 	if (unity_MetaFragmentControl.x) {
@@ -45,9 +48,10 @@ float4 MetaPassFragment(Varyings input) : SV_TARGET{
 		meta.rgb = min( PositivePow(meta.rgb, unity_OneOverOutputBoost), unity_MaxOutputValue );
 	}
 	else if (unity_MetaFragmentControl.y) {
-		meta = float4(GetEmission(input.baseUV), 1.0);
+		meta = float4(GetEmission(config), 1.0);
 	}
-	return meta;
+	
+	return meta; 
 }
 
 #endif

@@ -3,15 +3,6 @@
 
 #include "../ShaderLibrary/Common.hlsl"
 
-// TEXTURE2D(_BaseMap);
-// SAMPLER(sampler_BaseMap);
-
-// UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-//     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
-//     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
-//     UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
-// UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
-
 struct Attributes {
     float3 positionOS : POSITION;
     float2 baseUV : TEXCOORD0;
@@ -27,7 +18,6 @@ struct Varyings {
 Varyings  ShadowCasterPassVertex (Attributes input) {
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
-    ClipLOD(input.positionCS.xy, unity_LODFade.x);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     float3 positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(positionWS);
@@ -45,7 +35,9 @@ Varyings  ShadowCasterPassVertex (Attributes input) {
 
 void ShadowCasterPassFragment (Varyings input) {
     UNITY_SETUP_INSTANCE_ID(input);
-    float4 base = GetBase(input.baseUV);
+    ClipLOD(input.positionCS.xy, unity_LODFade.x);
+    InputConfig config = GetInputConfig(input.baseUV);
+    float4 base = GetBase(config);
     #if defined(_SHADOWS_CLIP)
         clip(base.a - GetCutoff(input.baseUV));
     #elif defined(_SHADOWS_DITHER)
