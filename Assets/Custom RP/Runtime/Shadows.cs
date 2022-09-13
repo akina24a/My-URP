@@ -60,15 +60,18 @@ public class Shadows
         {
             float maskChannel = -1;
             LightBakingOutput lightBaking = light.bakingOutput;
-            if ( lightBaking.lightmapBakeType == LightmapBakeType.Mixed && lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask )
+            if (lightBaking.lightmapBakeType == LightmapBakeType.Mixed &&
+                lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask)
             {
                 useShadowMask = true;
                 maskChannel = lightBaking.occlusionMaskChannel;
             }
-            if (!cullingResults.GetShadowCasterBounds( visibleLightIndex, out Bounds b ))
+
+            if (!cullingResults.GetShadowCasterBounds(visibleLightIndex, out Bounds b))
             {
                 return new Vector4(-light.shadowStrength, 0f, 0f, maskChannel);
             }
+
             ShadowedDirectionalLights[ShadowedDirectionalLightCount] =
                 new ShadowedDirectionalLight
                 {
@@ -84,7 +87,20 @@ public class Shadows
 
         return new Vector4(0f, 0f, 0f, -1f);
     }
-
+    public Vector4 ReserveOtherShadows (Light light, int visibleLightIndex) {
+        if (light.shadows != LightShadows.None && light.shadowStrength > 0f) {
+            LightBakingOutput lightBaking = light.bakingOutput;
+            if ( lightBaking.lightmapBakeType == LightmapBakeType.Mixed && lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask ) 
+            {
+                useShadowMask = true;
+                return new Vector4(
+                    light.shadowStrength, 0f, 0f,
+                    lightBaking.occlusionMaskChannel
+                );
+            }
+        }
+        return new Vector4(0f, 0f, 0f, -1f);
+    }
     public void Setup(
         ScriptableRenderContext context, CullingResults cullingResults,
         ShadowSettings settings
