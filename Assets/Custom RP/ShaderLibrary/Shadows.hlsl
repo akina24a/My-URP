@@ -90,7 +90,7 @@ ShadowData GetShadowData(Surface surfaceWS)
             break;
         }
     }
-    if (i == _CascadeCount)
+    if (i == _CascadeCount && _CascadeCount > 0)
     {
         data.strength = 0.0;
     }
@@ -108,9 +108,7 @@ ShadowData GetShadowData(Surface surfaceWS)
 
 float SampleDirectionalShadowAtlas(float3 positionSTS)
 {
-    return SAMPLE_TEXTURE2D_SHADOW(
-        _DirectionalShadowAtlas, SHADOW_SAMPLER, positionSTS
-    );
+    return SAMPLE_TEXTURE2D_SHADOW(  _DirectionalShadowAtlas, SHADOW_SAMPLER, positionSTS );
 }
 
 float FilterDirectionalShadow(float3 positionSTS)
@@ -209,25 +207,26 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
     return shadow;
 }
 
+float GetOtherShadow ( OtherShadowData other, ShadowData global, Surface surfaceWS)
+{
+    return 1.0;
+}
 
-float GetOtherShadowAttenuation(
-    OtherShadowData other, ShadowData global, Surface surfaceWS
-)
+float GetOtherShadowAttenuation(  OtherShadowData other, ShadowData global, Surface surfaceWS)
 {
     #if !defined(_RECEIVE_SHADOWS)
     return 1.0;
     #endif
 
     float shadow;
-    if (other.strength > 0.0)
+    if (other.strength * global.strength <= 0.0 > 0.0)
     {
-        shadow = GetBakedShadow(
-            global.shadowMask, other.shadowMaskChannel, other.strength
-        );
+        shadow = GetBakedShadow( global.shadowMask, other.shadowMaskChannel,  abs(other.strength) );
     }
     else
     {
-        shadow = 1.0;
+        shadow = GetOtherShadow(other, global, surfaceWS);
+        shadow = MixBakedAndRealtimeShadows(  global, shadow, other.shadowMaskChannel, other.strength );
     }
     return shadow;
 }
