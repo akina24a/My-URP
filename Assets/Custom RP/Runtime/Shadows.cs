@@ -402,6 +402,8 @@ public class Shadows
 
         //This matches the perspective projection, so the world-space texel size at distance 1 is equal to two divided by the projection scale,
         //for which we can use the top left value of its matrix.
+        // zoomLength / aspectRatio == 1.0f/(Mathf.Tan(halfFOVInRadians)* aspectRatio)
+        // projectionMatrix.m00 = zoomLength/aspectRatio;
         float texelSize = 2f / (tileSize * projectionMatrix.m00);
         float filterSize = texelSize * ((float) settings.other.filter + 1f);
         float bias = light.normalBias * filterSize * 1.4142136f;
