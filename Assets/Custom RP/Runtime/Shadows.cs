@@ -193,6 +193,7 @@ public class Shadows
         buffer.GetTemporaryRT(dirShadowAtlasId, atlasSize, atlasSize, 32, FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
         buffer.SetRenderTarget( dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         buffer.ClearRenderTarget(true, false, Color.clear);
+        buffer.SetGlobalFloat(shadowPancakingId, 1f);
         buffer.BeginSample(bufferName);
         ExecuteBuffer();
         int tiles = ShadowedDirectionalLightCount * settings.directional.cascadeCount;
@@ -224,6 +225,7 @@ public class Shadows
         buffer.GetTemporaryRT( otherShadowAtlasId, atlasSize, atlasSize, 32, FilterMode.Bilinear, RenderTextureFormat.Shadowmap );
         buffer.SetRenderTarget( otherShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store );
         buffer.ClearRenderTarget(true, false, Color.clear);
+        buffer.SetGlobalFloat(shadowPancakingId, 0f);
         buffer.BeginSample(bufferName);
         ExecuteBuffer();
 
