@@ -3,24 +3,26 @@ using UnityEngine.Rendering;
 
 public partial class CameraRenderer
 {
-
     ScriptableRenderContext context;
-
     Camera camera;
     const string bufferName = "BBN Render Camera";
-    CullingResults cullingResults;
-    static ShaderTagId
-        unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
+
+    static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
         litShaderTagId = new ShaderTagId("CustomLit");
-    
 
     CommandBuffer buffer = new CommandBuffer
     {
         name = bufferName
     };
+
     Lighting lighting = new Lighting();
-    public void Render(ScriptableRenderContext context, Camera camera,bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
-        ShadowSettings shadowSettings)
+    PostFXStack postFXStack = new PostFXStack();
+    CullingResults cullingResults;
+    static int frameBufferId = Shader.PropertyToID("_CameraFrameBuffer");
+
+    public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing,
+        bool useLightsPerObject,
+        ShadowSettings shadowSettings, PostFXSettings postFXSettings)
     {
         this.context = context;
         this.camera = camera;
@@ -34,29 +36,39 @@ public partial class CameraRenderer
         buffer.BeginSample(SampleName);
         ExecuteBuffer();
         lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject);
+        postFXStack.Setup(context, camera, postFXSettings);
         buffer.EndSample(SampleName);
         Setup();
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
         DrawUnsupportedShaders();
-        DrawGizmos();
-        lighting.Cleanup();
+        DrawGizmosBeforeFX();
+        if (postFXStack.IsActive) 
+        {
+            postFXStack.Render(frameBufferId);
+        }
+        DrawGizmosAfterFX();
+        Cleanup();
         Submit();
     }
 
     void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject)
     {
-        PerObjectData lightsPerObjectFlags = useLightsPerObject ? PerObjectData.LightData | PerObjectData.LightIndices : PerObjectData.None;
+        PerObjectData lightsPerObjectFlags =
+            useLightsPerObject ? PerObjectData.LightData | PerObjectData.LightIndices : PerObjectData.None;
         var sortingSettings = new SortingSettings(camera)
         {
             criteria = SortingCriteria.CommonOpaque
         };
         var drawingSettings = new DrawingSettings(
             unlitShaderTagId, sortingSettings
-        ){
+        )
+        {
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing,
-            perObjectData = PerObjectData.ReflectionProbes |PerObjectData.Lightmaps | PerObjectData.ShadowMask | PerObjectData.LightProbe|
-                            PerObjectData.OcclusionProbe |PerObjectData.LightProbeProxyVolume| PerObjectData.OcclusionProbeProxyVolume|
+            perObjectData = PerObjectData.ReflectionProbes | PerObjectData.Lightmaps | PerObjectData.ShadowMask |
+                            PerObjectData.LightProbe |
+                            PerObjectData.OcclusionProbe | PerObjectData.LightProbeProxyVolume |
+                            PerObjectData.OcclusionProbeProxyVolume |
                             lightsPerObjectFlags
         };
         drawingSettings.SetShaderPassName(1, litShaderTagId);
@@ -73,18 +85,37 @@ public partial class CameraRenderer
         context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
     }
 
-    
 
     void Setup()
     {
         //Clear (color+Z+stencil),
         context.SetupCameraProperties(camera);
         CameraClearFlags flags = camera.clearFlags;
-        buffer.ClearRenderTarget(flags <= CameraClearFlags.Depth, flags == CameraClearFlags.Color, flags == CameraClearFlags.Color ?
-            camera.backgroundColor.linear : Color.clear);
+
+        if (postFXStack.IsActive)
+        {
+            if (flags > CameraClearFlags.Color) 
+            {
+                flags = CameraClearFlags.Color;
+            }
+            buffer.GetTemporaryRT(frameBufferId, camera.pixelWidth, camera.pixelHeight, 32, FilterMode.Bilinear,
+                RenderTextureFormat.Default);
+            buffer.SetRenderTarget(frameBufferId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
+        }
+
+        buffer.ClearRenderTarget(flags <= CameraClearFlags.Depth, flags == CameraClearFlags.Color,
+            flags == CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear);
         buffer.BeginSample(SampleName);
         ExecuteBuffer();
-        
+    }
+
+    void Cleanup()
+    {
+        lighting.Cleanup();
+        if (postFXStack.IsActive)
+        {
+            buffer.ReleaseTemporaryRT(frameBufferId);
+        }
     }
 
     void Submit()
@@ -100,12 +131,15 @@ public partial class CameraRenderer
         buffer.Clear();
     }
 
-    bool Cull (float maxShadowDistance) {
-        if (camera.TryGetCullingParameters(out ScriptableCullingParameters p)) {
-            p.shadowDistance =  Mathf.Min(maxShadowDistance, camera.farClipPlane);
+    bool Cull(float maxShadowDistance)
+    {
+        if (camera.TryGetCullingParameters(out ScriptableCullingParameters p))
+        {
+            p.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
             cullingResults = context.Cull(ref p);
             return true;
         }
+
         return false;
     }
 }
