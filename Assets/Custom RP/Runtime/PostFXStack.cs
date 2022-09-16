@@ -19,12 +19,14 @@ public partial class PostFXStack
 
     enum Pass 
     {
+        Copy,
         BloomHorizontal,
         BloomVertical,
-        Copy
+        BloomCombine
     }
     
-    int fxSourceId = Shader.PropertyToID("_PostFXSource");
+    int fxSourceId = Shader.PropertyToID("_PostFXSource"),
+        fxSource2Id = Shader.PropertyToID("_PostFXSource2");
     public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings )
     {
         this.context = context;
