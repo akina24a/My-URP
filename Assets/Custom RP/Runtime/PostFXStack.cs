@@ -17,9 +17,13 @@ public partial class PostFXStack
 
     PostFXSettings settings;
 
-    enum Pass {
+    enum Pass 
+    {
+        BloomHorizontal,
+        BloomVertical,
         Copy
     }
+    
     int fxSourceId = Shader.PropertyToID("_PostFXSource");
     public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings )
     {
@@ -31,7 +35,7 @@ public partial class PostFXStack
 
     public void Render(int sourceId)
     {
-        Draw(sourceId, BuiltinRenderTextureType.CameraTarget, Pass.Copy);
+        DoBloom(sourceId);
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();
     }
