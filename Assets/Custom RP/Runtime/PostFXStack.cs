@@ -17,13 +17,15 @@ public partial class PostFXStack
 
     PostFXSettings settings;
 
+    bool useHDR;
     enum Pass 
     {
         Copy,
         BloomHorizontal,
         BloomVertical,
         BloomCombine,
-        BloomPrefilter
+        BloomPrefilter,
+        BloomPrefilterFireflies
     }
     
     int bloomBucibicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
@@ -32,8 +34,9 @@ public partial class PostFXStack
         bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
         fxSourceId = Shader.PropertyToID("_PostFXSource"),
         fxSource2Id = Shader.PropertyToID("_PostFXSource2");
-    public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings )
+    public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings, bool useHDR )
     {
+        this.useHDR = useHDR;
         this.context = context;
         this.camera = camera;
         this.settings = camera.cameraType <= CameraType.SceneView ? settings : null;
