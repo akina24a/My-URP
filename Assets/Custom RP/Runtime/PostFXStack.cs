@@ -23,14 +23,21 @@ public partial class PostFXStack
         Copy,
         BloomHorizontal,
         BloomVertical,
-        BloomCombine,
+        BloomAdd,
         BloomPrefilter,
-        BloomPrefilterFireflies
+        BloomPrefilterFireflies,
+        BloomScatter,
+        BloomScatterFinal,
+        ToneMappingACES,
+        ToneMappingNeutral,
+        ToneMappingReinhard,
+
     }
     
     int bloomBucibicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
         bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
         bloomPrefilterId = Shader.PropertyToID("_BloomPrefilter"),
+        bloomResultId = Shader.PropertyToID("_BloomResult"),
         bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
         fxSourceId = Shader.PropertyToID("_PostFXSource"),
         fxSource2Id = Shader.PropertyToID("_PostFXSource2");
@@ -45,7 +52,13 @@ public partial class PostFXStack
 
     public void Render(int sourceId)
     {
-        DoBloom(sourceId);
+        if (DoBloom(sourceId)) {
+            DoToneMapping(bloomResultId);
+            buffer.ReleaseTemporaryRT(bloomResultId);
+        }
+        else {
+            DoToneMapping(sourceId);
+        }
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();
     }
@@ -56,4 +69,6 @@ public partial class PostFXStack
         buffer.SetRenderTarget(  to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store );
         buffer.DrawProcedural( Matrix4x4.identity, settings.Material, (int)pass,  MeshTopology.Triangles, 3 );
     }
+    
+   
 }

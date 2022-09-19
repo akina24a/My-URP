@@ -39,7 +39,7 @@
 		}
 		
 			Pass {
-			Name "Bloom Combine"
+			Name "Bloom Add"
 			
 			HLSLPROGRAM
 				#pragma target 3.5
@@ -63,6 +63,51 @@
 				#pragma target 3.5
 				#pragma vertex DefaultPassVertex
 				#pragma fragment BloomPrefilterFirefliesPassFragment  
+			ENDHLSL
+		}
+		Pass {
+			Name "Bloom Scatter"
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment BloomScatterPassFragment  
+			ENDHLSL
+		}
+		Pass {
+			Name "Bloom FinalPass"
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment BloomScatterFinalPassFragment   
+			ENDHLSL
+		}
+		Pass {
+			Name "ToneMapping ACES "
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment ToneMappingACESPassFragment    
+			ENDHLSL
+		}
+		Pass {
+			Name "ToneMapping Neutral "
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment ToneMappingNeutralPassFragment     
+			ENDHLSL
+		}
+		Pass {
+			Name "ToneMapping Reinhard"
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment ToneMappingReinhardPassFragment    
 			ENDHLSL
 		}
 	}
