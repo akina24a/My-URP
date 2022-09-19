@@ -13,3 +13,10 @@ MonoBehaviour:
   m_Name: bbnPostFX
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: 07412e4643789704f98582fe8396896d, type: 3}
+  bloom:
+    maxIterations: 6
+    downscaleLimit: 2
+    bicubicUpsampling: 1
+    threshold: 0.53
+    thresholdKnee: 0.311
+    intensity: 6

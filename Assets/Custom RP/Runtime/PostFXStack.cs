@@ -22,10 +22,15 @@ public partial class PostFXStack
         Copy,
         BloomHorizontal,
         BloomVertical,
-        BloomCombine
+        BloomCombine,
+        BloomPrefilter
     }
     
-    int fxSourceId = Shader.PropertyToID("_PostFXSource"),
+    int bloomBucibicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
+        bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
+        bloomPrefilterId = Shader.PropertyToID("_BloomPrefilter"),
+        bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
+        fxSourceId = Shader.PropertyToID("_PostFXSource"),
         fxSource2Id = Shader.PropertyToID("_PostFXSource2");
     public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings )
     {

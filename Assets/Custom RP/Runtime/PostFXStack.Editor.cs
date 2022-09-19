@@ -33,14 +33,27 @@ partial class PostFXStack
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
 
 
-        if (bloom.maxIterations == 0 || height < bloom.downscaleLimit || width < bloom.downscaleLimit)
+        if (bloom.maxIterations == 0 || bloom.intensity <= 0f || height < bloom.downscaleLimit * 2|| width < bloom.downscaleLimit* 2)
         {
             Draw(sourceId, BuiltinRenderTextureType.CameraTarget, Pass.Copy);
             buffer.EndSample("Bloom");
             return;
         }
+        
+        Vector4 threshold;
+        threshold.x = Mathf.GammaToLinearSpace(bloom.threshold);
+        threshold.y = threshold.x * bloom.thresholdKnee;
+        threshold.z = 2f * threshold.y;
+        threshold.w = 0.25f / (threshold.y + 0.00001f);
+        threshold.y -= threshold.x;
+        buffer.SetGlobalVector(bloomThresholdId, threshold);
+        
         RenderTextureFormat format = RenderTextureFormat.Default;
-        int fromId = sourceId, toId = bloomPyramidId;
+        buffer.GetTemporaryRT( bloomPrefilterId, width, height, 0, FilterMode.Bilinear, format );
+        Draw(sourceId, bloomPrefilterId, Pass.BloomPrefilter);
+        width /= 2;
+        height /= 2;
+        int fromId = bloomPrefilterId, toId = bloomPyramidId;
         int i;
         for (i = 0; i < bloom.maxIterations; i++) 
         {
@@ -58,7 +71,10 @@ partial class PostFXStack
             width /= 2;
             height /= 2;
         }
+        buffer.ReleaseTemporaryRT(bloomPrefilterId);
+        buffer.SetGlobalFloat( bloomBucibicUpsamplingId, bloom.bicubicUpsampling ? 1f : 0f );
         // Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.Copy);
+        buffer.SetGlobalFloat(bloomIntensityId, 1f);
         if (i > 1)
         {
             buffer.ReleaseTemporaryRT(fromId - 1);
@@ -77,6 +93,7 @@ partial class PostFXStack
         {
             buffer.ReleaseTemporaryRT(bloomPyramidId);
         }
+        buffer.SetGlobalFloat(bloomIntensityId, bloom.intensity);
         buffer.SetGlobalTexture(fxSource2Id, sourceId);
         Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.BloomCombine);
         buffer.ReleaseTemporaryRT(fromId);
