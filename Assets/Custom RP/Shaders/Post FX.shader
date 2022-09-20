@@ -57,7 +57,7 @@
 			ENDHLSL
 		}
 		Pass {
-			Name "Bloom BloomPrefilterFireflies"
+			Name "Bloom PrefilterFireflies"
 			
 			HLSLPROGRAM
 				#pragma target 3.5
@@ -75,7 +75,7 @@
 			ENDHLSL
 		}
 		Pass {
-			Name "Bloom FinalPass"
+			Name "Bloom Scatter FinalPass"
 			
 			HLSLPROGRAM
 				#pragma target 3.5
@@ -84,30 +84,49 @@
 			ENDHLSL
 		}
 		Pass {
-			Name "ToneMapping ACES "
+			Name "ColorGrading None "
 			
 			HLSLPROGRAM
 				#pragma target 3.5
 				#pragma vertex DefaultPassVertex
-				#pragma fragment ToneMappingACESPassFragment    
+				#pragma fragment ColorGradingNonePassFragment     
 			ENDHLSL
 		}
 		Pass {
-			Name "ToneMapping Neutral "
+			Name "ColorGrading ACES "
 			
 			HLSLPROGRAM
 				#pragma target 3.5
 				#pragma vertex DefaultPassVertex
-				#pragma fragment ToneMappingNeutralPassFragment     
+				#pragma fragment ColorGradingACESPassFragment     
 			ENDHLSL
 		}
 		Pass {
-			Name "ToneMapping Reinhard"
+			Name "ColorGrading Neutral "
 			
 			HLSLPROGRAM
 				#pragma target 3.5
 				#pragma vertex DefaultPassVertex
-				#pragma fragment ToneMappingReinhardPassFragment    
+				#pragma fragment ColorGradingNeutralPassFragment      
+			ENDHLSL
+		}
+		Pass {
+			Name "ColorGrading Reinhard"
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment ColorGradingReinhardPassFragment     
+			ENDHLSL
+		}
+		
+			Pass {
+			Name "Final Pass"
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment FinalPassFragment     
 			ENDHLSL
 		}
 	}

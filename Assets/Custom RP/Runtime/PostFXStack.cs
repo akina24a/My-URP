@@ -16,7 +16,8 @@ public partial class PostFXStack
     Camera camera;
 
     PostFXSettings settings;
-
+    int colorLUTResolution;
+    
     bool useHDR;
     enum Pass 
     {
@@ -28,10 +29,11 @@ public partial class PostFXStack
         BloomPrefilterFireflies,
         BloomScatter,
         BloomScatterFinal,
-        ToneMappingACES,
-        ToneMappingNeutral,
-        ToneMappingReinhard,
-
+        ColorGradingNone,
+        ColorGradingACES,
+        ColorGradingNeutral,
+        ColorGradingReinhard,
+        Final
     }
     
     int bloomBucibicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
@@ -40,9 +42,25 @@ public partial class PostFXStack
         bloomResultId = Shader.PropertyToID("_BloomResult"),
         bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
         fxSourceId = Shader.PropertyToID("_PostFXSource"),
-        fxSource2Id = Shader.PropertyToID("_PostFXSource2");
-    public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings, bool useHDR )
+        fxSource2Id = Shader.PropertyToID("_PostFXSource2"),
+        colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
+        colorFilterId = Shader.PropertyToID("_ColorFilter"),
+        whiteBalanceId = Shader.PropertyToID("_WhiteBalance"),
+        splitToningShadowsId = Shader.PropertyToID("_SplitToningShadows"),
+        splitToningHighlightsId = Shader.PropertyToID("_SplitToningHighlights"),
+        channelMixerRedId = Shader.PropertyToID("_ChannelMixerRed"),
+        channelMixerGreenId = Shader.PropertyToID("_ChannelMixerGreen"),
+        channelMixerBlueId = Shader.PropertyToID("_ChannelMixerBlue"),
+        smhShadowsId = Shader.PropertyToID("_SMHShadows"),
+        smhMidtonesId = Shader.PropertyToID("_SMHMidtones"),
+        smhHighlightsId = Shader.PropertyToID("_SMHHighlights"),
+        smhRangeId = Shader.PropertyToID("_SMHRange"),
+        colorGradingLUTId = Shader.PropertyToID("_ColorGradingLUT"),
+        colorGradingLUTParametersId = Shader.PropertyToID("_ColorGradingLUTParameters"),
+        colorGradingLUTInLogId = Shader.PropertyToID("_ColorGradingLUTInLogC");
+    public void Setup( ScriptableRenderContext context, Camera camera, PostFXSettings settings, bool useHDR , int colorLUTResolution )
     {
+        this.colorLUTResolution = colorLUTResolution;
         this.useHDR = useHDR;
         this.context = context;
         this.camera = camera;
@@ -53,11 +71,11 @@ public partial class PostFXStack
     public void Render(int sourceId)
     {
         if (DoBloom(sourceId)) {
-            DoToneMapping(bloomResultId);
+            DoColorGradingAndToneMapping(bloomResultId);
             buffer.ReleaseTemporaryRT(bloomResultId);
         }
         else {
-            DoToneMapping(sourceId);
+            DoColorGradingAndToneMapping(sourceId);
         }
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();
@@ -69,6 +87,5 @@ public partial class PostFXStack
         buffer.SetRenderTarget(  to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store );
         buffer.DrawProcedural( Matrix4x4.identity, settings.Material, (int)pass,  MeshTopology.Triangles, 3 );
     }
-    
-   
+
 }
