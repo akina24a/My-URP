@@ -380,7 +380,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 3
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 44c6f1f7cc833024d9cf5b8a85d70bc2, type: 2}
@@ -936,7 +936,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingLayerMask: 32771
+  m_RenderingLayerMask: 2147483647
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
@@ -1307,6 +1307,7 @@ GameObject:
   - component: {fileID: 1006134519}
   - component: {fileID: 1006134518}
   - component: {fileID: 1006134517}
+  - component: {fileID: 1006134520}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1379,6 +1380,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1006134520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006134516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3ef6476f33cf246acce9dac57b70b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings:
+    finalBlendMode:
+      source: 1
+      destination: 0
+    overridePostFX: 0
+    postFXSettings: {fileID: 0}
+    renderingLayerMask: 1
+    maskLights: 0
 --- !u!1 &1256604733
 GameObject:
   m_ObjectHideFlags: 0
