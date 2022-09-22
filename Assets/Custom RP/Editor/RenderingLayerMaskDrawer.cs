@@ -11,8 +11,8 @@ public class RenderingLayerMaskDrawer : PropertyDrawer
         EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
         EditorGUI.BeginChangeCheck();
         int mask = property.intValue;
-        bool isUint = property.type == "uint";
-        if (isUint && mask == int.MaxValue)
+        // bool isUint = property.type == "uint";
+        if (/*isUint &&*/ mask == int.MaxValue)
         {
             mask = -1;
         }
@@ -23,7 +23,7 @@ public class RenderingLayerMaskDrawer : PropertyDrawer
         );
         if (EditorGUI.EndChangeCheck())
         {
-            property.intValue = isUint && mask == -1 ? int.MaxValue : mask;
+            property.intValue = /*isUint && */mask == -1 ? int.MaxValue : mask;
         }
 
         EditorGUI.showMixedValue = false;

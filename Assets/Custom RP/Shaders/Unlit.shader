@@ -19,7 +19,7 @@
 		#include "UnlitInput.hlsl"
 		ENDHLSL
 		Pass {
-			Blend [_SrcBlend] [_DstBlend]
+			Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
 			ZWrite [_ZWrite]
 			HLSLPROGRAM
 			#pragma target 3.5

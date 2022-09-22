@@ -17,6 +17,7 @@ UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
     UNITY_DEFINE_INSTANCED_PROP(float, _Occlusion)
     UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
     UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
+    UNITY_DEFINE_INSTANCED_PROP(float, _ZWrite)
     UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
     UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
     UNITY_DEFINE_INSTANCED_PROP(float, _Fresnel)
@@ -134,7 +135,9 @@ float GetSmoothness (InputConfig c) {
     return smoothness;
 }
 
-
+float GetFinalAlpha (float alpha) {
+    return INPUT_PROP(_ZWrite) ? 1.0 : alpha;
+}
 
 
 #endif

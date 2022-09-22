@@ -158,7 +158,7 @@ partial class PostFXStack
         buffer.SetGlobalFloat( colorGradingLUTInLogId, useHDR && pass != Pass.ColorGradingNone ? 1f : 0f  );
         Draw(sourceId, colorGradingLUTId, pass);
         buffer.SetGlobalVector(colorGradingLUTParametersId, new Vector4(1f / lutWidth, 1f / lutHeight, lutHeight - 1f) );
-        Draw(sourceId, BuiltinRenderTextureType.CameraTarget, Pass.Final);
+        DrawFinal(sourceId);
         buffer.ReleaseTemporaryRT(colorGradingLUTId);
     }
     

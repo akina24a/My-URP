@@ -32,7 +32,7 @@ float4 UnlitPassFragment (Varyings input) : SV_TARGET {
     #if defined(_CLIPPING)
     clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));
     #endif
-    return base;
+    return float4(base.rgb, GetFinalAlpha(base.a));;
  
 }
 

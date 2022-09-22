@@ -30,8 +30,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         //simple to support different rendering approaches per camera
         foreach (Camera camera in cameras)
         {
-            renderer.Render(context, camera, allowHDR,
-                useDynamicBatching, useGPUInstancing,useLightsPerObject,shadowSettings, postFXSettings, colorLUTResolution);
+            renderer.Render(context, camera, allowHDR, useDynamicBatching, useGPUInstancing,useLightsPerObject,shadowSettings, postFXSettings, colorLUTResolution);
         }
     }
 
