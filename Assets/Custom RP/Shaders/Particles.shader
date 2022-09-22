@@ -3,6 +3,7 @@
 	Properties {
 		_BaseMap("Texture", 2D) = "white" {}
 		_BaseColor("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+		[Toggle(_VERTEX_COLORS)] _VertexColors ("Vertex Colors", Float) = 0
 		_Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 		_Metallic ("Metallic", Range(0, 1)) = 0
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.5
@@ -28,7 +29,7 @@
 			#include "UnlitPass.hlsl"
 			#pragma shader_feature _CLIPPING
 			#pragma multi_compile_instancing
-
+			#pragma shader_feature _VERTEX_COLORS
 			ENDHLSL
 		}
 		

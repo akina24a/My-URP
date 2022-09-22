@@ -12,31 +12,33 @@ UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
 struct InputConfig {
+    float4 color;
     float2 baseUV;
-    float2 detailUV;
+    //float2 detailUV;
 };
 
 InputConfig GetInputConfig (float2 baseUV, float2 detailUV = 0.0) {
     InputConfig c;
+    c.color = 1.0;
     c.baseUV = baseUV;
-    c.detailUV = detailUV;
+    //c.detailUV = detailUV;
     return c;
 }
 float2 TransformBaseUV (float2 baseUV) {
-    float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST);
+    float4 baseST =  INPUT_PROP( _BaseMap_ST);
     return baseUV * baseST.xy + baseST.zw;
 }
 float GetFresnel (InputConfig c) {
     return 0.0;
 }
 float4 GetBase (InputConfig c) {
-    float4 map = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.baseUV);
-    float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
-    return map * color;
+    float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.baseUV);
+    float4 baseColor = INPUT_PROP(_BaseColor);
+    return baseMap * baseColor * c.color;
 }
 
 float GetCutoff (InputConfig c) {
-    return UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
+    return INPUT_PROP( _Cutoff);
 }
 
 float GetMetallic (InputConfig c) {
