@@ -3,16 +3,17 @@ using UnityEngine.Rendering;
 
 public partial class CustomRenderPipeline : RenderPipeline
 {
-
-    CameraRenderer renderer = new CameraRenderer();
+    private CameraRenderer renderer;
     bool useDynamicBatching, useGPUInstancing, useLightsPerObject;
     ShadowSettings shadowSettings;
     PostFXSettings postFXSettings;
     bool allowHDR;
     int colorLUTResolution;
     
+    partial void DisposeForEditor ();
+    
     public CustomRenderPipeline (bool allowHDR,bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,bool useLightsPerObject, ShadowSettings shadowSettings ,
-		PostFXSettings postFXSettings, int colorLUTResolution) 
+		PostFXSettings postFXSettings, int colorLUTResolution, Shader cameraRendererShader) 
     {
         this.allowHDR = allowHDR;
         this.shadowSettings = shadowSettings;
@@ -23,6 +24,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         this.useLightsPerObject = useLightsPerObject;
         this.postFXSettings = postFXSettings;
         this.colorLUTResolution = colorLUTResolution;
+        renderer = new CameraRenderer(cameraRendererShader);
         InitializeForEditor();
     }
     protected override void Render(ScriptableRenderContext context, Camera[] cameras)

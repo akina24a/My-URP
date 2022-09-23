@@ -7,21 +7,29 @@ SAMPLER(sampler_BaseMap);
 UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
+    UNITY_DEFINE_INSTANCED_PROP(float, _NearFadeDistance)
+    UNITY_DEFINE_INSTANCED_PROP(float, _NearFadeRange)
     UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
     UNITY_DEFINE_INSTANCED_PROP(float, _ZWrite)
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
 struct InputConfig {
+    Fragment fragment;
     float4 color;
     float2 baseUV;
-    //float2 detailUV;
+    float3 flipbookUVB;
+    bool flipbookBlending;
+    bool nearFade;
 };
 
-InputConfig GetInputConfig (float2 baseUV, float2 detailUV = 0.0) {
+InputConfig GetInputConfig (float4 positionSS,float2 baseUV, float2 detailUV = 0.0) {
     InputConfig c;
+    c.fragment = GetFragment(positionSS);
     c.color = 1.0;
     c.baseUV = baseUV;
-    //c.detailUV = detailUV;
+    c.flipbookUVB = 0.0;
+    c.flipbookBlending = false;
+    c.nearFade = false;
     return c;
 }
 float2 TransformBaseUV (float2 baseUV) {
@@ -33,6 +41,17 @@ float GetFresnel (InputConfig c) {
 }
 float4 GetBase (InputConfig c) {
     float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.baseUV);
+    if (c.flipbookBlending) {
+        baseMap = lerp(
+            baseMap, SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.flipbookUVB.xy),
+            c.flipbookUVB.z
+        );
+    }
+    if (c.nearFade) {
+        float nearAttenuation = (c.fragment.depth - INPUT_PROP(_NearFadeDistance)) /
+            INPUT_PROP(_NearFadeRange);
+        baseMap.a *= saturate(nearAttenuation);
+    }
     float4 baseColor = INPUT_PROP(_BaseColor);
     return baseMap * baseColor * c.color;
 }

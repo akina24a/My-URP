@@ -1,13 +1,14 @@
-﻿#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+﻿
 #ifndef CUSTOM_POST_FX_PASSES_INCLUDED
 #define CUSTOM_POST_FX_PASSES_INCLUDED
+
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 
 TEXTURE2D(_PostFXSource);
 TEXTURE2D(_PostFXSource2);
 
-SAMPLER(sampler_linear_clamp);
-float4 _ProjectionParams;
+
 float4 _PostFXSource_TexelSize;
 
 

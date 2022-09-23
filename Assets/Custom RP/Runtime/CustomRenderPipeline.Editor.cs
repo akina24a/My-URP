@@ -14,11 +14,14 @@ public partial class CustomRenderPipeline
     
     protected override void Dispose (bool disposing) {
         base.Dispose(disposing);
+        DisposeForEditor();
+        renderer.Dispose();
+    }
+    partial void DisposeForEditor () {
+        //base.Dispose(disposing);
         Lightmapping.ResetDelegate();
     }
-    
-    static Lightmapping.RequestLightsDelegate lightsDelegate =
-        (Light[] lights, NativeArray<LightDataGI> output) =>
+    static Lightmapping.RequestLightsDelegate lightsDelegate = (Light[] lights, NativeArray<LightDataGI> output) =>
         {
             var lightData = new LightDataGI();
             for (int i = 0; i < lights.Length; i++)
