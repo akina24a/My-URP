@@ -23,4 +23,6 @@ public class CameraSettings {
     public int renderingLayerMask = -1;
     
     public bool maskLights = false;
+    
+    public bool copyColor = true,copyDepth = true;
 }

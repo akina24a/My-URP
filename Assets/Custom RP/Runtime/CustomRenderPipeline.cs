@@ -7,15 +7,16 @@ public partial class CustomRenderPipeline : RenderPipeline
     bool useDynamicBatching, useGPUInstancing, useLightsPerObject;
     ShadowSettings shadowSettings;
     PostFXSettings postFXSettings;
-    bool allowHDR;
+    CameraBufferSettings cameraBufferSettings;
+
     int colorLUTResolution;
     
     partial void DisposeForEditor ();
     
-    public CustomRenderPipeline (bool allowHDR,bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,bool useLightsPerObject, ShadowSettings shadowSettings ,
+    public CustomRenderPipeline (CameraBufferSettings cameraBufferSettings,bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,bool useLightsPerObject, ShadowSettings shadowSettings ,
 		PostFXSettings postFXSettings, int colorLUTResolution, Shader cameraRendererShader) 
     {
-        this.allowHDR = allowHDR;
+        this.cameraBufferSettings = cameraBufferSettings;
         this.shadowSettings = shadowSettings;
         this.useDynamicBatching = useDynamicBatching;
         this.useGPUInstancing = useGPUInstancing;
@@ -32,7 +33,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         //simple to support different rendering approaches per camera
         foreach (Camera camera in cameras)
         {
-            renderer.Render(context, camera, allowHDR, useDynamicBatching, useGPUInstancing,useLightsPerObject,shadowSettings, postFXSettings, colorLUTResolution);
+            renderer.Render(context, camera, cameraBufferSettings, useDynamicBatching, useGPUInstancing,useLightsPerObject,shadowSettings, postFXSettings, colorLUTResolution);
         }
     }
 
