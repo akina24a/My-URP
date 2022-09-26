@@ -30,7 +30,16 @@ MonoBehaviour:
       cascadeBlend: 2
     other:
       atlasSize: 1024
-      filter: 2
+      filter: 1
   postFXSettings: {fileID: 11400000, guid: 240f0b58a686b394ba3ff885de82c5da, type: 2}
-  allowHDR: 1
-  colorLUTResolution: 32
+  cameraBuffer:
+    allowHDR: 1
+    copyColor: 1
+    copyColorReflection: 0
+    copyDepth: 1
+    copyDepthReflections: 0
+    bicubicRescaling: 2
+    renderScale: 0.211
+  colorLUTResolution: 64
+  cameraRendererShader: {fileID: 4800000, guid: c810b9b60a22e9b4d96f24a7ab2c51a4,
+    type: 3}
