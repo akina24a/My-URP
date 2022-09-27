@@ -152,7 +152,7 @@ partial class PostFXStack
     }
 
 
-    void DoColorGradingAndToneMapping(int sourceId) {                  
+    void DoFinal(int sourceId) {                  
         ConfigureColorAdjustments();
         ConfigureWhiteBalance();
         ConfigureSplitToning();
@@ -167,14 +167,31 @@ partial class PostFXStack
         buffer.SetGlobalFloat( colorGradingLUTInLogId, useHDR && pass != Pass.ColorGradingNone ? 1f : 0f  );
         Draw(sourceId, colorGradingLUTId, pass);
         buffer.SetGlobalVector(colorGradingLUTParametersId, new Vector4(1f / lutWidth, 1f / lutHeight, lutHeight - 1f) );
+        //final blend mode for color grading is set to One Zero.
+        buffer.SetGlobalFloat(finalSrcBlendId, 1f);
+        buffer.SetGlobalFloat(finalDstBlendId, 0f);
+        if (fxaa.enabled) {
+            buffer.GetTemporaryRT( colorGradingResultId, bufferSize.x, bufferSize.y, 0, FilterMode.Bilinear, RenderTextureFormat.Default );
+            Draw(sourceId, colorGradingResultId, Pass.ApplyColorGrading);
+        }
         if (bufferSize.x == camera.pixelWidth) {
-            DrawFinal(sourceId, Pass.Final);
+            if (fxaa.enabled) {
+                DrawFinal(colorGradingResultId, Pass.FXAA);
+                buffer.ReleaseTemporaryRT(colorGradingResultId);
+            }
+            else {
+                DrawFinal(sourceId, Pass.ApplyColorGrading);
+            }
         }
         else {
-            buffer.SetGlobalFloat(finalSrcBlendId, 1f);
-            buffer.SetGlobalFloat(finalDstBlendId, 0f);
             buffer.GetTemporaryRT( finalResultId, bufferSize.x, bufferSize.y, 0, FilterMode.Bilinear, RenderTextureFormat.Default  );
-            Draw(sourceId, finalResultId, Pass.Final);
+            if (fxaa.enabled) {
+                Draw(colorGradingResultId, finalResultId, Pass.FXAA);
+                buffer.ReleaseTemporaryRT(colorGradingResultId);
+            }
+            else {
+                Draw(sourceId, finalResultId, Pass.ApplyColorGrading);
+            }
             bool bicubicSampling =
                 bicubicRescaling == CameraBufferSettings.BicubicRescalingMode.UpAndDown ||
                 bicubicRescaling == CameraBufferSettings.BicubicRescalingMode.UpOnly &&

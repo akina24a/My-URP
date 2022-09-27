@@ -6,6 +6,9 @@ public partial class PostFXStack
     const string bufferName = "Post FX";
     public bool IsActive => settings != null;
 
+    CameraBufferSettings.FXAA fxaa;
+ 
+    
     CommandBuffer buffer = new CommandBuffer
     {
         name = bufferName
@@ -33,8 +36,9 @@ public partial class PostFXStack
         ColorGradingACES,
         ColorGradingNeutral,
         ColorGradingReinhard,
-        Final,
-        FinalRescale
+        ApplyColorGrading,
+        FinalRescale,
+        FXAA
         
     }
     
@@ -61,6 +65,7 @@ public partial class PostFXStack
         colorGradingLUTParametersId = Shader.PropertyToID("_ColorGradingLUTParameters"),
         colorGradingLUTInLogId = Shader.PropertyToID("_ColorGradingLUTInLogC"),
         copyBicubicId = Shader.PropertyToID("_CopyBicubic"),
+        colorGradingResultId = Shader.PropertyToID("_ColorGradingResult"),
         finalResultId = Shader.PropertyToID("_finalResult");
     
     int finalSrcBlendId = Shader.PropertyToID("_FinalSrcBlend"),
@@ -69,8 +74,9 @@ public partial class PostFXStack
     CameraBufferSettings.BicubicRescalingMode bicubicRescaling;
     
     public void Setup( ScriptableRenderContext context, Camera camera, Vector2Int bufferSize, PostFXSettings settings, bool useHDR , int colorLUTResolution,
-        CameraSettings.FinalBlendMode finalBlendMode , CameraBufferSettings.BicubicRescalingMode bicubicRescaling)
+        CameraSettings.FinalBlendMode finalBlendMode , CameraBufferSettings.BicubicRescalingMode bicubicRescaling, CameraBufferSettings.FXAA fxaa)
     {
+        this.fxaa = fxaa;
         this.bicubicRescaling = bicubicRescaling;
         this.bufferSize = bufferSize;
         this.finalBlendMode = finalBlendMode;
@@ -85,11 +91,11 @@ public partial class PostFXStack
     public void Render(int sourceId)
     {
         if (DoBloom(sourceId)) {
-            DoColorGradingAndToneMapping(bloomResultId);
+            DoFinal(bloomResultId);
             buffer.ReleaseTemporaryRT(bloomResultId);
         }
         else {
-            DoColorGradingAndToneMapping(sourceId);
+            DoFinal(sourceId);
         }
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();

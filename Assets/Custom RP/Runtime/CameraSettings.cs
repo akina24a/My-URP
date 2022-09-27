@@ -16,6 +16,8 @@ public class CameraSettings {
         destination = BlendMode.Zero
     };
     
+    public bool allowFXAA = false;
+    
     public bool overridePostFX = false;
 
     public PostFXSettings postFXSettings = default;

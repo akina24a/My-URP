@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using System;
 
-[System.Serializable]
+[Serializable]
 public struct CameraBufferSettings {
 
     public bool allowHDR;
@@ -13,4 +14,12 @@ public struct CameraBufferSettings {
     
     [Range(CameraRenderer.renderScaleMin, CameraRenderer.renderScaleMax)]
     public float renderScale;
+    
+    [Serializable]
+    public struct FXAA {
+
+        public bool enabled;
+    }
+
+    public FXAA fxaa;
 }

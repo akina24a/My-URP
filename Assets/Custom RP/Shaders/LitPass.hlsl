@@ -69,10 +69,7 @@ float4 LitPassFragment  (Varyings input) : SV_TARGET {
     Surface surface;
     surface.position = input.positionWS;
     #if defined(_NORMAL_MAP)
-    surface.normal = NormalTangentToWorld(
-        GetNormalTS(config),
-        input.normalWS, input.tangentWS
-    );
+    surface.normal = NormalTangentToWorld( GetNormalTS(config),  input.normalWS, input.tangentWS );
     surface.interpolatedNormal = input.normalWS;
     #else
     surface.normal = normalize(input.normalWS);
