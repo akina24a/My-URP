@@ -21,7 +21,9 @@ public partial class PostFXStack
     PostFXSettings settings;
     int colorLUTResolution;
     Vector2Int bufferSize;
-    bool useHDR;
+    
+    bool keepAlpha, useHDR;
+    
     enum Pass 
     {
         Copy,
@@ -38,7 +40,9 @@ public partial class PostFXStack
         ColorGradingReinhard,
         ApplyColorGrading,
         FinalRescale,
-        FXAA
+        FXAA,
+        ApplyColorGradingWithLuma,
+        FXAAWithLuma
         
     }
     
@@ -71,11 +75,13 @@ public partial class PostFXStack
     int finalSrcBlendId = Shader.PropertyToID("_FinalSrcBlend"),
         finalDstBlendId = Shader.PropertyToID("_FinalDstBlend");
     
+    int fxaaConfigId = Shader.PropertyToID("_FXAAConfig");
     CameraBufferSettings.BicubicRescalingMode bicubicRescaling;
     
-    public void Setup( ScriptableRenderContext context, Camera camera, Vector2Int bufferSize, PostFXSettings settings, bool useHDR , int colorLUTResolution,
+    public void Setup( ScriptableRenderContext context, Camera camera, Vector2Int bufferSize, PostFXSettings settings,bool keepAlpha,  bool useHDR , int colorLUTResolution,
         CameraSettings.FinalBlendMode finalBlendMode , CameraBufferSettings.BicubicRescalingMode bicubicRescaling, CameraBufferSettings.FXAA fxaa)
     {
+        this.keepAlpha = keepAlpha;
         this.fxaa = fxaa;
         this.bicubicRescaling = bicubicRescaling;
         this.bufferSize = bufferSize;
