@@ -2,10 +2,15 @@
 项目用于学习Unity SRP的渲染。
 
 1.前向渲染管线的搭建
+
 2.各个灯光的光照和阴影
-3.常见后处理
+
+3.常见volume后处理
+
 4.LightMap和LightProbe的GI
-5.PCSS软阴影加进去
+
+5.软阴影
+
 6.PBR的间接光加入IBL方式的GI
 
 ![r1](https://github.com/akina24a/My-URP/assets/51435834/fe3446cb-2845-48d7-981a-381391699e49)
